@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Mini Blog</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    </head>
+
+    <body onload="init()">
+        <!--Creating the Navigation Bar
+        d-flex is used to make the navbar items align horizontally
+        -->
+        <div class="d-flex flex-column align-items-center p-3 bg-white border-bottom box-shadow fixed-top"> 
+        <img src="img/mini-blog-logo.png" height="40">
+        <nav>
+            <a id="getLatest" class="p-2 text-dark" href="#">Latest</a>
+            <a id="getPopular" class="p-2 text-dark" href="#">Popular</a>
+            <a id="getAll" class="p-2 text-dark active" href="#">All</a>
+        </nav>
+        </div>
+        <!--Blog Header Section-->
+        <div class="blog-header mx-auto text-center"> 
+            <h1>Is it beautiful</h1>
+            <p class="lead">All the latest <strong><em>Tech</em></strong>, <strong><em>Design</em></strong> and <strong><em>Development</em></strong> news from around the world</p>
+
+        </div>
+        <!--Team section-->
+        <div class="container team">
+            <img src="img/andile.jpg" class="img-thumbnail rounded-circle" width="90" />
+            <img src="img/bob.jpg" class="img-thumbnail rounded-circle" width="90" />
+            <img src="img/dave.jpg" class="img-thumbnail rounded-circle" width="90" />
+            <img src="img/jane.jpg" class="img-thumbnail rounded-circle" width="90" />
+            <img src="img/john.jpg" class="img-thumbnail rounded-circle" width="90" />
+            <img src="img/lee.jpg" class="img-thumbnail rounded-circle" width="90" />
+            <img src="img/lungi.jpg" class="img-thumbnail rounded-circle" width="90" />
+            <img src="img/sally.jpg" class="img-thumbnail rounded-circle" width="90" />
+            <img src="img/thandi.jpg" class="img-thumbnail rounded-circle" width="90" />
+        </div>
+        <!-- Main content section this is done in html-->
+        <div class="row container mx-auto">
+            <div class="column" id="posts">
+                Loading content...
+                
+            </div>
+
+        </div>
+       
+
+
+
+
+
+
+        <script src="js/jquery-3.7.1.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script>
+            // adding the main content path
+            var rootPath;
+            //this is what will be called when the page loads
+            function init() { 
+                rootPath = "https://mysite.itvarsity.org/api/mini-blog/";
+
+                //add the event handlers for the navigation bar
+                document.getElementById("getLatest").addEventListener("click", getLatestPosts);
+                document.getElementById("getPopular").addEventListener("click", getPopularPosts);   
+                document.getElementById("getAll").addEventListener("click", getAllPosts);
+
+                // when opening up the app, we want to load the all posts. this is what you will see on the page.
+                getAllPosts();
+            }
+            //add the event handlers for the navigation bar
+            function getAllPosts(){
+                category = "getAll";
+                //fetch ALL the posts in the server
+                fetchPosts(category);
+                //set active link
+                setActiveLink(category);
+
+            }
+            function getPopularPosts(){
+                category = "getPopular";
+                //fetch ALL the posts in teh server
+                fetchPosts(category);
+                //set active link
+                setActiveLink(category);
+            }
+            function getLatestPosts(){
+                category = "getLatest";
+                //fetch ALL the posts in the server
+                fetchPosts(category);
+                //set active link
+                setActiveLink(category);
+            }
+
+            //this function will be used to fetch the posts from the server for all the above categories so we dont have to retype teh out 3 different times
+            function fetchPosts(category) {
+                fetch(rootPath + 'get-posts/?category=' + category)
+                .then(function(response) {
+                   return response.json();
+                })
+                .then(function(data){
+                    displayPosts(data);
+                })
+            }
+
+            // this function will be used to display the posts on the page in a card format
+            function displayPosts(data){
+                var output = "";
+                //loop through the data and create a card for each post
+                //card details where posts will be displayed in
+                for(a = 0; a < data.length; a++){
+                    output +=`
+                     <div class = "card mb-4 box-shadow">
+                        <div class="card-header">
+                            <h4 class="my-0 font-weight-normal">${data[a][0]}</h4>
+                        </div>
+                        <div class="card-body">
+                            <img src="${rootPath}/uploads/${data[a][3]}" class="card-img-top" />
+                                <p class =" card-text">"${data[a][1]}"</p> 
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-ln btn-link"><i class="far fa-heart"></i></button>
+                                        <button type="button" class="btn btn-ln btn-link"><i class="far fa-comment"></i></button>
+                                        <button type="button" class="btn btn-ln btn-link"><i class="fas fa-share"></i></button>
+                                    </div>
+                                    <small class="text-muted">${data[a][2]}</small>
+                                </div>
+                            </div>
+                    </div>
+                    `;
+                    }
+                //set the output to the posts div
+                document.getElementById("posts").innerHTML = output;
+            }
+
+            //set the active class to the current category
+            function setActiveLink(id) {
+                //remove the active class from all links
+                document.getElementById('getAll').classList.remove("active");
+                document.getElementById('getPopular').classList.remove("active");
+                document.getElementById('getLatest').classList.remove("active");
+                //add the active class to the current link
+                document.getElementById(id).classList.add('active');
+            }
+        </script>
+        </body>
